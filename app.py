@@ -11,7 +11,7 @@ st.title("Yallakora Match Center")
 # Get today's date for default
 today = datetime.today()
 
-# Define the range of years (e.g., from 2000 to the current year)
+# Define the range of years (e.g., from 2020 to the current year)
 current_year = today.year
 years = list(range(2020, current_year + 1))
 
@@ -46,6 +46,10 @@ def fetch_matches(date):
     
     championships = soup.find_all("div", {'class': 'matchCard'})
     
+    if not championships:
+        st.warning("No championships found for this date.")
+        return []
+
     def get_match_info(championship):
         try:
             championship_title = championship.find('h2').text.strip()
@@ -80,24 +84,25 @@ def fetch_matches(date):
     
     return matches_details
 
-# Fetch match details for the selected date if valid
+# Add a button to fetch matches only after confirming date
 if date:
-    matches = fetch_matches(date)
+    if st.button("Get Matches"):
+        matches = fetch_matches(date)
 
-    # Check if matches data was retrieved
-    if matches:
-        # Convert match details to DataFrame for better display
-        df = pd.DataFrame(matches)
-        st.write("### Match Details")
-        st.dataframe(df)  # Display the data in a table format
-        
-        # Option to download the match details as CSV
-        csv = df.to_csv(index=False).encode('utf-8-sig')
-        st.download_button(
-            label="Download match details as CSV",
-            data=csv,
-            file_name=f'matches_{date.replace("/", "-")}.csv',
-            mime='text/csv',
-        )
-    else:
-        st.write("No match details available for this date.")
+        # Check if matches data was retrieved
+        if matches:
+            # Convert match details to DataFrame for better display
+            df = pd.DataFrame(matches)
+            st.write("### Match Details")
+            st.dataframe(df)  # Display the data in a table format
+            
+            # Option to download the match details as CSV
+            csv = df.to_csv(index=False).encode('utf-8-sig')
+            st.download_button(
+                label="Download match details as CSV",
+                data=csv,
+                file_name=f'matches_{date.replace("/", "-")}.csv',
+                mime='text/csv',
+            )
+        else:
+            st.write("No match details available for this date.")
