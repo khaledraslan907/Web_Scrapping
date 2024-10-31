@@ -13,7 +13,7 @@ today = datetime.today()
 
 # Define the range of years (e.g., from 2000 to the current year)
 current_year = today.year
-years = list(range(2000, current_year + 1))
+years = list(range(2020, current_year + 1))
 
 # Define months and days
 months = list(range(1, 13))
