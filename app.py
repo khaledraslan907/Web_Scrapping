@@ -27,7 +27,7 @@ selected_day = st.selectbox("Select a day:", days, index=today.day - 1)  # Defau
 # Function to validate the selected date
 def validate_date(year, month, day):
     try:
-        valid_date = datetime(year, month, day).strftime('%m/%d/%Y')
+        valid_date = datetime(year, month, day).strftime('%m-%d-%Y')
         return valid_date
     except ValueError:
         st.warning("Invalid date selected. Please check the day for the selected month.")
@@ -42,21 +42,16 @@ if st.button("Enter to display matches"):
         # Fetch and parse the page content
         @st.cache_data
         def fetch_matches(date):
-            # Check URL in the browser first to confirm it returns matches for the entered date
             url = f"https://www.yallakora.com/match-center/?date={date}"
             page = requests.get(url)
             src = page.content
             soup = BeautifulSoup(src, "lxml")
             matches_details = []
-            
-            # Print out part of the page content to check if expected HTML is returned
-            st.write("Fetched content preview:", src[:500])  # Show the first 500 characters
 
             championships = soup.find_all("div", {'class': 'matchCard'})
             
             # Check if championships were found
             if not championships:
-                st.warning("No championships found for this date.")
                 return []
 
             def get_match_info(championship):
@@ -91,10 +86,9 @@ if st.button("Enter to display matches"):
 
         # Check if matches data was retrieved
         if matches:
-            # Convert match details to DataFrame for better display
             df = pd.DataFrame(matches)
             st.write("### Match Details")
-            st.dataframe(df)  # Display the data in a table format
+            st.dataframe(df)
             
             # Option to download the match details as CSV
             csv = df.to_csv(index=False).encode('utf-8-sig')
