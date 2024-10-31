@@ -41,16 +41,23 @@ if st.button("Enter to display matches"):
     if date:
         # Fetch and parse the page content
         def fetch_matches(date):
-            # Add headers to simulate a browser request
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
             }
             url = f"https://www.yallakora.com/match-center/?date={date}"
             try:
-                page = requests.get(url, headers=headers)
+                page = requests.get(url, headers=headers, timeout=10)
+                
+                # Display the status code and a preview of content
+                st.write(f"Status Code: {page.status_code}")
+                st.write("Content Preview:", page.text[:500])  # Show the first 500 characters
+                
+                # Check if the response is valid
                 if page.status_code != 200:
                     st.error(f"Error fetching data. Status code: {page.status_code}")
                     return []
+                
+                # Parse page content
                 src = page.content
                 soup = BeautifulSoup(src, "lxml")
                 matches_details = []
